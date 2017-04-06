@@ -8,10 +8,10 @@
 
 class SmartWatering {
 public:
-    SmartWatering(byte relayPin, byte enabledMinutes, byte time[3]) {
+    SmartWatering(byte relayPin, byte enabledMinutes, byte time[3]) : enabledMinutes(enabledMinutes) {
         this->relay = new Relay(relayPin);
-        this->time = new Time(time);
-        this->enabledMs = enabledMinutes * 60 * 1000;
+        this->startTime = new Time(time);
+        this->finishTime = new Time();
     }
 
     void setup() {
@@ -22,12 +22,12 @@ public:
 
         if (interval.isReady()) {
 
-            if (time->equals(clock.getHour(h12, PM), clock.getMinute(), clock.getSecond())) {
+            if (startTime->equals(clock.getHour(h12, PM), clock.getMinute(), clock.getSecond())) {
                 relay->enable();
-                enabledTimeout.start(enabledMs);
+                calculateFinishTime();
             }
 
-            if (relay->isEnabled() & enabledTimeout.isReady()) {
+            if (finishTime->equals(clock.getHour(h12, PM), clock.getMinute(), clock.getSecond())) {
                 relay->disable();
             }
 
@@ -46,12 +46,16 @@ private:
 
     Interval interval = Interval(1000);
 
-    Timeout enabledTimeout;
-    unsigned int enabledMs;
+    unsigned int enabledMinutes;
 
-    Time *time;
+    Time *startTime;
+    Time *finishTime;
 
     Relay *relay;
+
+    void calculateFinishTime() const {
+        finishTime->setDaySeconds(startTime->getDaySeconds() + enabledMinutes * 60);
+    }
 };
 
 #endif

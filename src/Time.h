@@ -3,12 +3,26 @@
 
 class Time {
 public:
+    Time() {}
+
     Time(byte hour, byte minute, byte second) : hour(hour), minute(minute), second(second) {}
 
     Time(byte time[3]) : hour(time[0]), minute(time[1]), second(time[2]) {}
 
     bool equals(byte hour, byte minute, byte second) {
         return (hour == this->hour) & (minute == this->minute) & (second == this->second);
+    }
+
+    unsigned long getDaySeconds() {
+        return (unsigned long) ((hour * 60L + minute) * 60 + second);
+    }
+
+    void setDaySeconds(unsigned long daySeconds) {
+        second = (byte) (daySeconds % 60);
+        daySeconds /= 60;
+        minute = (byte) (daySeconds % 60);
+        daySeconds /= 60;
+        hour = (byte) (daySeconds % 24);
     }
 
 private:
