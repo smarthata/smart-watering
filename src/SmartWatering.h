@@ -3,6 +3,7 @@
 
 #include <DS3231.h>
 #include <Relay.h>
+#include <Timing.h>
 #include "Time.h"
 
 class SmartWatering {
@@ -17,24 +18,27 @@ public:
     }
 
     void loop() {
-        Serial.print(clock.getHour(h12, PM));
-        Serial.print(':');
-        Serial.print(clock.getMinute());
-        Serial.print(':');
-        Serial.println(clock.getSecond());
 
-        Serial.println(time->equals(clock.getHour(h12, PM), clock.getMinute(), clock.getSecond()));
+        if (interval.isReady()) {
 
-        relay->enable();
-        delay(500);
-        relay->disable();
-        delay(500);
+            if (time->equals(clock.getHour(h12, PM), clock.getMinute(), clock.getSecond())) {
+                relay->enable();
+            }
+
+            Serial.print(clock.getHour(h12, PM));
+            Serial.print(':');
+            Serial.print(clock.getMinute());
+            Serial.print(':');
+            Serial.println(clock.getSecond());
+        }
     }
 
 private:
     DS3231 clock;
     bool h12 = false;
     bool PM = false;
+
+    Interval interval = Interval(1000);
 
     Time *time;
 
