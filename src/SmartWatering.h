@@ -7,6 +7,10 @@
 
 class SmartWatering {
 public:
+    SmartWatering(byte relayPin) {
+        relay = new Relay(relayPin);
+    }
+
     void setup() {
         Wire.begin();
     }
@@ -20,9 +24,9 @@ public:
 
         Serial.println(time.equals(clock.getHour(h12, PM), clock.getMinute(), clock.getSecond()));
 
-        relay.enable();
+        relay->enable();
         delay(500);
-        relay.disable();
+        relay->disable();
         delay(500);
     }
 
@@ -33,7 +37,7 @@ private:
 
     Time time = Time(21, 20, 30);
 
-    Relay relay = Relay(13);
+    Relay *relay;
 };
 
 #endif
