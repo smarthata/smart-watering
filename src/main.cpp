@@ -3,7 +3,8 @@
 
 #define RELAY_PIN 13
 
-SmartWatering smartWatering(RELAY_PIN);
+byte arr[] = {22, 5, 40};
+SmartWatering smartWatering(RELAY_PIN, arr);
 
 void setup() {
     Serial.begin(9600);
