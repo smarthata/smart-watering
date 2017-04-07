@@ -25,7 +25,6 @@ public:
         hour = (byte) (daySeconds % 24);
     }
 
-private:
     byte hour, minute, second;
 };
 

@@ -1,15 +1,17 @@
 #include <Arduino.h>
 #include "SmartWatering.h"
 
-#define RELAY_PIN 13
-#define ENABLED_MINUTES 1
+byte relay_pins[] = {13, 12, 11};
+byte minutes[] = {1, 2, 3};
 
-SmartWatering smartWatering(new byte[3]{17, 46, 0});
+SmartWatering smartWatering(new byte[3]{18, 43, 10}, sizeof(relay_pins));
 
 void setup() {
     Serial.begin(9600);
     smartWatering.setup();
-    smartWatering.setChannel(RELAY_PIN, ENABLED_MINUTES);
+    for (int i = 0; i < sizeof(relay_pins); ++i) {
+        smartWatering.addChannel(relay_pins[i], minutes[i]);
+    }
 }
 
 void loop() {
