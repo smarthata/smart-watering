@@ -32,7 +32,7 @@ public:
         return false;
     }
 
-    Channel *current() {
+    Channel *current() const {
         return channels[currentChannel];
     }
 
@@ -44,15 +44,19 @@ private:
     Channel **channels;
 
     void enableCurrent() {
-        current()->relay->enable();
-        Serial.print("Enable channel: ");
-        Serial.println(currentChannel);
+        current()->enable();
+        Serial.print("Enable channel [");
+        Serial.print(currentChannel);
+        Serial.print("] for [");
+        Serial.print(current()->getEnabledMinutes());
+        Serial.println("] minutes");
     }
 
     void disableCurrent() {
-        current()->relay->disable();
-        Serial.print("Disable channel: ");
-        Serial.println(currentChannel);
+        current()->disable();
+        Serial.print("Disable channel [");
+        Serial.print(currentChannel);
+        Serial.println("]");
     }
 };
 

@@ -9,7 +9,7 @@ SmartWatering smartWatering(new byte[3]{18, 43, 10}, sizeof(relay_pins));
 void setup() {
     Serial.begin(9600);
     smartWatering.setup();
-    for (int i = 0; i < sizeof(relay_pins); ++i) {
+    for (unsigned int i = 0; i < sizeof(relay_pins); ++i) {
         smartWatering.addChannel(relay_pins[i], minutes[i]);
     }
 }

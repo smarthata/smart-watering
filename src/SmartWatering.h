@@ -1,7 +1,8 @@
 #ifndef SMART_WATERING_SMARTWATERING_H
 #define SMART_WATERING_SMARTWATERING_H
 
-#include <DS3231.h>
+#include "Timing.h"
+#include "Clock.h"
 #include "ChannelHolder.h"
 
 class SmartWatering {
@@ -12,19 +13,20 @@ public:
         this->channelHolder = new ChannelHolder(maxChannelCount);
     }
 
-    void setup() {
-        Wire.begin();
+    void setup() const {
+        clock.setup();
     }
 
     void loop() {
 
         if (interval.isReady()) {
-            if (startTime->equals(clock.getHour(h12, PM), clock.getMinute(), clock.getSecond())) {
+            if (clock.equals(startTime)) {
                 channelHolder->startEnable();
+                finishTime->setDaySeconds(startTime->getDaySeconds());
                 calculateFinishTime();
             }
 
-            if (finishTime->equals(clock.getHour(h12, PM), clock.getMinute(), clock.getSecond())) {
+            if (clock.equals(finishTime)) {
                 if (channelHolder->nextEnable()) {
                     calculateFinishTime();
                 }
@@ -32,7 +34,7 @@ public:
         }
 
         if (clockInterval.isReady()) {
-            Serial.print(clock.getHour(h12, PM));
+            Serial.print(clock.getHour());
             Serial.print(':');
             Serial.print(clock.getMinute());
             Serial.print(':');
@@ -41,13 +43,11 @@ public:
     }
 
     void addChannel(byte relayPin, byte enabledMinutes) {
-        channelHolder->addChannel(new Channel(new Relay(relayPin), enabledMinutes));
+        channelHolder->addChannel(new Channel(relayPin, enabledMinutes));
     }
 
 private:
-    DS3231 clock;
-    bool h12 = false;
-    bool PM = false;
+    Clock clock;
 
     Interval interval = Interval(1000);
     Interval clockInterval = Interval(5000);
@@ -58,12 +58,7 @@ private:
     ChannelHolder *channelHolder;
 
     void calculateFinishTime() const {
-        unsigned int enabledMinutes = channelHolder->current()->enabledMinutes;
-        Serial.print("Enabling for ");
-        Serial.print(enabledMinutes);
-        Serial.println(" minutes");
-
-        finishTime->setDaySeconds(finishTime->getDaySeconds() + enabledMinutes * 60);
+        finishTime->addDaySeconds(channelHolder->current()->getEnabledMinutes() * 60);
 
         Serial.print("Time to disable: ");
         Serial.print(finishTime->hour);
