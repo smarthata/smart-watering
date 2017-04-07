@@ -14,13 +14,18 @@ public:
         return DS3231::getHour(h12, PM);
     }
 
-    bool equals(Time *time) {
-        return (time->hour == getHour()) & (time->minute == getMinute()) & (time->second == getSecond());
+    Time &readTime() {
+        time.hour = getHour();
+        time.minute = getMinute();
+        time.second = getSecond();
+        return time;
     }
 
 private:
     bool h12 = false;
     bool PM = false;
+
+    Time time;
 };
 
 #endif

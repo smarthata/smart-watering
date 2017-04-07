@@ -7,10 +7,10 @@
 
 class SmartWatering {
 public:
-    SmartWatering(byte time[3], byte maxChannelCount) {
-        this->startTime = new Time(time);
-        this->finishTime = new Time(time);
-        this->channelHolder = new ChannelHolder(maxChannelCount);
+    SmartWatering(const byte totalTimes, const byte totalChannels) {
+        this->times = new Time *[totalTimes];
+        this->finishTime = new Time();
+        this->channelHolder = new ChannelHolder(totalChannels);
     }
 
     void setup() const {
@@ -20,30 +20,35 @@ public:
     void loop() {
 
         if (interval.isReady()) {
-            if (clock.equals(startTime)) {
-                channelHolder->startEnable();
-                finishTime->setDaySeconds(startTime->getDaySeconds());
-                calculateFinishTime();
+            Time now = clock.readTime();
+            for (byte i = 0; i < timesCount; ++i) {
+                if (now.equals(times[i])) {
+                    channelHolder->start();
+                    finishTime->setDaySeconds(times[i]->getDaySeconds());
+                    calculateFinishTime();
+                    break;
+                }
             }
 
-            if (clock.equals(finishTime)) {
-                if (channelHolder->nextEnable()) {
+            if (now.equals(finishTime)) {
+                if (channelHolder->enableNext()) {
                     calculateFinishTime();
                 }
             }
         }
 
         if (clockInterval.isReady()) {
-            Serial.print(clock.getHour());
-            Serial.print(':');
-            Serial.print(clock.getMinute());
-            Serial.print(':');
-            Serial.println(clock.getSecond());
+            clock.readTime().display();
         }
     }
 
-    void addChannel(byte relayPin, byte enabledMinutes) {
+    void addChannel(const byte relayPin, const unsigned int enabledMinutes) {
         channelHolder->addChannel(new Channel(relayPin, enabledMinutes));
+    }
+
+    void addTime(Time *time) {
+        this->times[timesCount] = time;
+        timesCount++;
     }
 
 private:
@@ -52,7 +57,8 @@ private:
     Interval interval = Interval(1000);
     Interval clockInterval = Interval(5000);
 
-    Time *startTime;
+    byte timesCount;
+    Time **times;
     Time *finishTime;
 
     ChannelHolder *channelHolder;
@@ -61,11 +67,7 @@ private:
         finishTime->addDaySeconds(channelHolder->current()->getEnabledMinutes() * 60);
 
         Serial.print("Time to disable: ");
-        Serial.print(finishTime->hour);
-        Serial.print(':');
-        Serial.print(finishTime->minute);
-        Serial.print(':');
-        Serial.println(finishTime->second);
+        finishTime->display();
     }
 };
 

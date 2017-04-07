@@ -5,8 +5,8 @@
 
 class ChannelHolder {
 public:
-    ChannelHolder(byte maxChannelCount) {
-        this->channels = new Channel *[maxChannelCount];
+    ChannelHolder(byte totalChannels) {
+        this->channels = new Channel *[totalChannels];
     }
 
     void addChannel(Channel *channel) {
@@ -14,12 +14,12 @@ public:
         channelCount++;
     }
 
-    void startEnable() {
+    void start() {
         currentChannel = 0;
         enableCurrent();
     }
 
-    bool nextEnable() {
+    bool enableNext() {
         disableCurrent();
 
         currentChannel++;
@@ -27,6 +27,7 @@ public:
             enableCurrent();
             return true;
         }
+        currentChannel = 0;
 
         Serial.println("Finish all channels");
         return false;

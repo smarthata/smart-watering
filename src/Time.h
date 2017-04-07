@@ -13,6 +13,10 @@ public:
         return (hour == this->hour) & (minute == this->minute) & (second == this->second);
     }
 
+    bool equals(const Time *other) const {
+        return (other->hour == this->hour) & (other->minute == this->minute) & (other->second == this->second);
+    }
+
     unsigned long getDaySeconds() const {
         return (unsigned long) ((hour * 60L + minute) * 60 + second);
     }
@@ -27,6 +31,14 @@ public:
 
     void addDaySeconds(unsigned long daySeconds) {
         setDaySeconds(getDaySeconds() + daySeconds);
+    }
+
+    void display() {
+        Serial.print(hour);
+        Serial.print(':');
+        Serial.print(minute);
+        Serial.print(':');
+        Serial.println(second);
     }
 
     byte hour, minute, second;
