@@ -2,14 +2,11 @@
 #define SMART_WATERING_SMARTWATERING_H
 
 #include <DS3231.h>
-#include <Relay.h>
-#include <Timing.h>
-#include "Time.h"
+#include "Channel.h"
 
 class SmartWatering {
 public:
-    SmartWatering(byte relayPin, byte enabledMinutes, byte time[3]) : enabledMinutes(enabledMinutes) {
-        this->relay = new Relay(relayPin);
+    SmartWatering(byte time[3]) {
         this->startTime = new Time(time);
         this->finishTime = new Time();
     }
@@ -23,12 +20,14 @@ public:
         if (interval.isReady()) {
 
             if (startTime->equals(clock.getHour(h12, PM), clock.getMinute(), clock.getSecond())) {
-                relay->enable();
+                channel->relay->enable();
                 calculateFinishTime();
+                Serial.print("Enable channel");
             }
 
             if (finishTime->equals(clock.getHour(h12, PM), clock.getMinute(), clock.getSecond())) {
-                relay->disable();
+                channel->relay->disable();
+                Serial.print("Disable channel");
             }
 
             Serial.print(clock.getHour(h12, PM));
@@ -39,6 +38,10 @@ public:
         }
     }
 
+    void setChannel(byte relayPin, byte enabledMinutes) {
+        this->channel = new Channel(new Relay(relayPin), enabledMinutes);
+    }
+
 private:
     DS3231 clock;
     bool h12 = false;
@@ -46,15 +49,13 @@ private:
 
     Interval interval = Interval(1000);
 
-    unsigned int enabledMinutes;
-
     Time *startTime;
     Time *finishTime;
 
-    Relay *relay;
+    Channel *channel;
 
     void calculateFinishTime() const {
-        finishTime->setDaySeconds(startTime->getDaySeconds() + enabledMinutes * 60);
+        finishTime->setDaySeconds(startTime->getDaySeconds() + channel->enabledMinutes * 60);
     }
 };
 
