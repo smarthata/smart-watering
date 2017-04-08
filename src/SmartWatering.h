@@ -21,19 +21,11 @@ public:
 
         if (interval.isReady()) {
             Time now = clock.readTime();
-            for (byte i = 0; i < timesCount; ++i) {
-                if (now.equals(times[i])) {
-                    channelHolder->start();
-                    finishTime->setDaySeconds(times[i]->getDaySeconds());
-                    calculateFinishTime();
-                    break;
-                }
+            if (inProgress) {
+                checkFinish(now);
             }
-
-            if (now.equals(finishTime)) {
-                if (channelHolder->enableNext()) {
-                    calculateFinishTime();
-                }
+            if (!inProgress) {
+                checkStart(now);
             }
         }
 
@@ -42,11 +34,42 @@ public:
         }
     }
 
+    void checkStart(const Time &now) {
+        for (byte i = 0; i < timesCount; ++i) {
+            if (now.equals(times[i])) {
+                channelHolder->start();
+                finishTime->setDaySeconds(times[i]->getDaySeconds());
+                calculateFinishTime();
+                inProgress = true;
+                break;
+            }
+        }
+    }
+
+    void checkFinish(const Time &now) {
+        if (now.equals(finishTime)) {
+            if (channelHolder->enableNext()) {
+                calculateFinishTime();
+            } else {
+                inProgress = false;
+            }
+        }
+    }
+
     void addChannel(const byte relayPin, const unsigned int enabledMinutes) {
+        Serial.print("Add channel on pin [");
+        Serial.print(relayPin);
+        Serial.print("] and [");
+        Serial.print(enabledMinutes);
+        Serial.println("] minutes");
         channelHolder->addChannel(new Channel(relayPin, enabledMinutes));
     }
 
     void addTime(Time *time) {
+        Serial.print("Add [");
+        Serial.print(timesCount);
+        Serial.print("] alarm on ");
+        time->display();
         this->times[timesCount] = time;
         timesCount++;
     }
@@ -60,6 +83,8 @@ private:
     byte timesCount;
     Time **times;
     Time *finishTime;
+
+    bool inProgress = false;
 
     ChannelHolder *channelHolder;
 
