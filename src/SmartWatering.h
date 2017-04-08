@@ -13,8 +13,24 @@ public:
         this->channelHolder = new ChannelHolder(totalChannels);
     }
 
-    void setup() const {
+    void setup() {
         clock.setup();
+        clock.displayFullDate();
+    }
+
+    void setDate(unsigned int year, byte month, byte dayOfMonth, byte dayOfWeek) {
+        clock.setYear(year - 2000);
+        clock.setMonth(month);
+        clock.setDate(dayOfMonth);
+        clock.setDoW(dayOfWeek);
+        clock.displayFullDate();
+    }
+
+    void setTime(byte hour, byte minute, byte second) {
+        clock.setHour(hour);
+        clock.setMinute(minute);
+        clock.setSecond(second);
+        clock.displayFullDate();
     }
 
     void loop() {

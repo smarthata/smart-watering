@@ -5,9 +5,9 @@ byte relay_pins[] = {13, 12, 11, 10, 9};
 byte minutes[] = {2, 3, 3, 1, 2};
 
 byte alarms[] = {
-        23, 15, 20,
-        23, 16, 20,
-        23, 17, 25,
+        23, 59, 55,
+        0, 0, 10,
+        0, 1, 25,
 };
 
 SmartWatering *smartWatering;
@@ -20,6 +20,8 @@ void setup() {
 
     smartWatering = new SmartWatering(totalAlarms, totalRelays);
     smartWatering->setup();
+    smartWatering->setDate(2017, 4, 8, 6);
+    smartWatering->setTime(23, 59, 50);
 
     for (byte i = 0; i < totalRelays; ++i) {
         smartWatering->addChannel(new Channel(relay_pins[i], minutes[i]));
