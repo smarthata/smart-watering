@@ -1,8 +1,8 @@
 #include <Arduino.h>
 #include "SmartWatering.h"
 
-byte relay_pins[] = {13, 12, 11};
-byte minutes[] = {10, 15, 8};
+byte relay_pins[] = {13, 12, 11, 10, 9};
+byte minutes[] = {2, 3, 3, 1, 2};
 
 byte alarms[] = {
         23, 15, 20,
@@ -22,7 +22,7 @@ void setup() {
     smartWatering->setup();
 
     for (byte i = 0; i < totalRelays; ++i) {
-        smartWatering->addChannel(relay_pins[i], minutes[i]);
+        smartWatering->addChannel(new Channel(relay_pins[i], minutes[i]));
     }
 
     for (byte i = 0; i < totalAlarms; ++i) {

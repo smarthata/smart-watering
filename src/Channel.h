@@ -5,6 +5,7 @@ class Channel {
 public:
     Channel(const byte pin, const unsigned int enabledMinutes) : pin(pin), enabledMinutes(enabledMinutes) {
         pinMode(pin, OUTPUT);
+        disable();
     }
 
     void enable() {
@@ -19,6 +20,10 @@ public:
 
     bool isEnabled() const {
         return enabled;
+    }
+
+    const byte getPin() const {
+        return pin;
     }
 
     const unsigned int getEnabledMinutes() const {

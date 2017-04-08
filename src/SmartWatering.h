@@ -56,19 +56,19 @@ public:
         }
     }
 
-    void addChannel(const byte relayPin, const unsigned int enabledMinutes) {
+    void addChannel(Channel *channel) {
         Serial.print("Add channel on pin [");
-        Serial.print(relayPin);
+        Serial.print(channel->getPin());
         Serial.print("] and [");
-        Serial.print(enabledMinutes);
+        Serial.print(channel->getEnabledMinutes());
         Serial.println("] minutes");
-        channelHolder->addChannel(new Channel(relayPin, enabledMinutes));
+        channelHolder->addChannel(channel);
     }
 
     void addTime(Time *time) {
-        Serial.print("Add [");
+        Serial.print("Add alarm [");
         Serial.print(timesCount);
-        Serial.print("] alarm on ");
+        Serial.print("] on ");
         time->display();
         this->times[timesCount] = time;
         timesCount++;
@@ -80,7 +80,7 @@ private:
     Interval interval = Interval(1000);
     Interval clockInterval = Interval(5000);
 
-    byte timesCount;
+    byte timesCount = 0;
     Time **times;
     Time *finishTime;
 
