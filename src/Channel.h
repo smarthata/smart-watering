@@ -3,18 +3,19 @@
 
 class Channel {
 public:
-    Channel(const byte pin, const unsigned int enabledMinutes) : pin(pin), enabledMinutes(enabledMinutes) {
+    Channel(const byte pin, const unsigned int enabledMinutes, const byte enabledVoltage) :
+            pin(pin), enabledMinutes(enabledMinutes), enabledVoltage(enabledVoltage) {
         pinMode(pin, OUTPUT);
         disable();
     }
 
     void enable() {
-        digitalWrite(pin, HIGH);
+        digitalWrite(pin, enabledVoltage);
         enabled = true;
     }
 
     void disable() {
-        digitalWrite(pin, LOW);
+        digitalWrite(pin, HIGH - enabledVoltage);
         enabled = false;
     }
 
@@ -33,6 +34,7 @@ public:
 private:
     const byte pin;
     const unsigned int enabledMinutes;
+    const byte enabledVoltage;
     bool enabled = false;
 };
 

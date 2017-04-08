@@ -2,6 +2,7 @@
 #include "SmartWatering.h"
 
 byte relay_pins[] = {13, 12, 11, 10, 9};
+byte relay_enabled[] = {HIGH, LOW, LOW, LOW, LOW};
 byte minutes[] = {2, 3, 3, 1, 2};
 
 byte alarms[] = {
@@ -24,7 +25,7 @@ void setup() {
     smartWatering->setTime(23, 59, 50);
 
     for (byte i = 0; i < totalRelays; ++i) {
-        smartWatering->addChannel(new Channel(relay_pins[i], minutes[i]));
+        smartWatering->addChannel(new Channel(relay_pins[i], minutes[i], relay_enabled[i]));
     }
 
     for (byte i = 0; i < totalAlarms; ++i) {
